@@ -11,8 +11,8 @@ int main(int argc, char** argv)
   image_transport::Publisher pub = it.advertise("camera/image", 1);  //create a publisher that is connected to image traport(it), the topic name and queue size are decided.
 
   ros::NodeHandle nh_private("~"); //create a private node handler to handle parameters related to the node
-  bool reduced = false; //boolean variable that decides whether you want to use reduced image or not-reduced image. If there is slow-down caused by big-sized data, then set it true.  
-  nh_private.param<bool>("reduced", reduced, false); //declare ros parameter named "reduced", the value of ros parameter will be saved in the variable 'reduced'
+  bool reduced = true; //boolean variable that decides whether you want to use reduced image or not-reduced image. If there is slow-down caused by big-sized data, then set it true.  
+  nh_private.param<bool>("reduced", reduced, true); //declare ros parameter named "reduced", the value of ros parameter will be saved in the variable 'reduced'
   bool show = false; //boolean variable that decides whether you want to see the image via new window
   nh_private.param<bool>("show",show,false); //declare ros parameter named "show",
 
