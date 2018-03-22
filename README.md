@@ -1,8 +1,8 @@
 # Caution when catkin_make
 
-you should install the xbox controller driver.
+you should install the xbox controller driver before catkin_make.
 
-please commend that before catkin_make
+please commend that
 
 sudo apt-get install libudev-dev ncurses-dev
 
