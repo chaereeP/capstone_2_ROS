@@ -1,3 +1,5 @@
+This package is made for xbox_controller test.
+
 comm_tcp: Package in ROS for TCP/IP communication
 =================================================
 
