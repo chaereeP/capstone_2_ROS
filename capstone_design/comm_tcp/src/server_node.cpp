@@ -1,4 +1,4 @@
- /*************************************************************************
+/*************************************************************************
  * Author: Abhinav Jain
  * Contact: abhinavjain241@gmail.com, abhinav.jain@heig-vd.ch
  * Date: 28/06/2016
@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "std_msgs/String.h"
@@ -35,6 +35,7 @@ int main (int argc, char** argv)
   int sockfd, newsockfd, portno; //Socket file descriptors and port number
   socklen_t clilen; //object clilen of type socklen_t
   char buffer[256]; //buffer array of size 256
+  float buffer_float[24];
   struct sockaddr_in serv_addr, cli_addr; ///two objects to store client and server address
   std_msgs::String message;
   std::stringstream ss;
@@ -67,17 +68,27 @@ int main (int argc, char** argv)
   if (newsockfd < 0)
        error("ERROR on accept");
   while(ros::ok()) {
-     ss.str(std::string()); //Clear contents of string stream
-     bzero(buffer,256);
-     n = read(newsockfd,buffer,255);
-     if (n < 0) error("ERROR reading from socket");
-     // printf("Here is the message: %s\n",buffer);
-     memcpy(buffer_float, buffer, sizeof(buffer));
+      ss.str(std::string()); //Clear contents of string stream
+      bzero(buffer,256);
+      n = read(newsockfd,buffer,255);
+      if (n < 0) error("ERROR reading from socket");
+      // printf("Here is the message: %s\n",buffer);
+      message.data = ss.str();
+      // ROS_INFO("%s", message.data.c_str());
+
+      memcpy(buffer_float, buffer, sizeof(buffer));
       for (int i = 0; i < 24; i++){
       printf("%f ",  (float)buffer_float[i]);
 
       }
       printf("\n");
+      // server_pub.publish(message);
+      // n = write(newsockfd,"I got your message",18);
+      // if (n < 0) error("ERROR writing to socket");
+      //close(newsockfd);
+      //close(sockfd);
+      //ros::spinOnce();
+      //d.sleep();
   }
   return 0;
 }
