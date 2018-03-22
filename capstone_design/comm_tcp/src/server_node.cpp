@@ -72,16 +72,12 @@ int main (int argc, char** argv)
      n = read(newsockfd,buffer,255);
      if (n < 0) error("ERROR reading from socket");
      // printf("Here is the message: %s\n",buffer);
-     ss << buffer;
-     message.data = ss.str();
-     ROS_INFO("%s", message.data.c_str());
-     server_pub.publish(message);
-     n = write(newsockfd,"I got your message",18);
-     if (n < 0) error("ERROR writing to socket");
-     //close(newsockfd);
-     //close(sockfd);
-     //ros::spinOnce();
-     //d.sleep();
+     memcpy(buffer_float, buffer, sizeof(buffer));
+      for (int i = 0; i < 24; i++){
+      printf("%f ",  (float)buffer_float[i]);
+
+      }
+      printf("\n");
   }
   return 0;
 }
