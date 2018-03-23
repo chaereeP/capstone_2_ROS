@@ -53,8 +53,10 @@ void ball_detect(){
 	ball_list.id = 0; //set the marker id. if you use another markers, then make them use their own unique ids
 	ball_list.type = visualization_msgs::Marker::SPHERE_LIST;  //set the type of marker
 
-	ball_list.scale.x=0.10; //set the radius of marker   1.0 means 1.0m, 0.001 means 1mm
-
+        double radius = 0.10;
+        ball_list.scale.x=radius; //set the radius of marker   1.0 means 1.0m, 0.001 means 1mm
+        ball_list.scale.y=radius;
+        ball_list.scale.z=radius;
      for(int k=0;k<circles.size();k++){
          params = circles[k];  //the information of k-th circle
          cx=cvRound(params[0]);  //x position of k-th circle 
