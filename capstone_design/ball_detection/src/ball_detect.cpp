@@ -10,7 +10,7 @@
 using namespace cv;
 using namespace std;
 
-Mat buffer(240,320,CV_8UC1);
+Mat buffer(320,240,CV_8UC1);
 ros::Publisher pub;
 ros::Publisher pub_markers;
 
@@ -19,7 +19,7 @@ void ball_detect(){
      Mat frame;  //assign a memory to save the images
 
      if(buffer.size().width==320){ //if the size of the image is 320x240, then resized it to 640x480
-         cv::resize(buffer, frame, cv::Size(480, 640));
+         cv::resize(buffer, frame, cv::Size(640, 480));
      }
      else{
          frame = buffer;
@@ -53,10 +53,8 @@ void ball_detect(){
 	ball_list.id = 0; //set the marker id. if you use another markers, then make them use their own unique ids
 	ball_list.type = visualization_msgs::Marker::SPHERE_LIST;  //set the type of marker
 
-        double radius = 0.10;
-        ball_list.scale.x=radius; //set the radius of marker   1.0 means 1.0m, 0.001 means 1mm
-        ball_list.scale.y=radius;
-        ball_list.scale.z=radius;
+	ball_list.scale.x=0.10; //set the radius of marker   1.0 means 1.0m, 0.001 means 1mm
+
      for(int k=0;k<circles.size();k++){
          params = circles[k];  //the information of k-th circle
          cx=cvRound(params[0]);  //x position of k-th circle 
@@ -85,7 +83,7 @@ void ball_detect(){
 	 c.a = 1.0;
 	 ball_list.colors.push_back(c);
      }
-     //cv::imshow("view", frame);  //show the image with a window
+     cv::imshow("view", frame);  //show the image with a window
      cv::waitKey(1); //main purpose of this command is to wait for a key command. However, many highgui related functions like imshow, redraw, and resize can not work without this command...just use it! 
 
      pub.publish(msg);  //publish a message
@@ -96,9 +94,9 @@ void ball_detect(){
 void imageCallback(const sensor_msgs::ImageConstPtr& msg)
 {
 
-std::cout<<msg->height<<std::endl;
-   if(msg->height==480){  //check the size of the image received. if the image have 640x480, then change the buffer size to 640x480. 
-	cv::resize(buffer,buffer,cv::Size(480,640));	
+   if(msg->height==480&&buffer.size().width==320){  //check the size of the image received. if the image have 640x480, then change the buffer size to 640x480. 
+	std::cout<<"resized"<<std::endl;
+	cv::resize(buffer,buffer,cv::Size(640,480));
 }
    else{
 	//do nothing!
