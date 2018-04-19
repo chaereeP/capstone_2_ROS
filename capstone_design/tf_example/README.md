@@ -52,13 +52,13 @@ Let's say there is a program like below
 
 int main(int argc,char** argv){<br />
 
-	printf("program started");<br />
-	while(true){<br />
-		functionA();<br />
-	}<br />
-	printf("program finished");<br />
-	return 0;<br />
-}<br />
+	printf("program started");
+	while(true){
+		functionA();
+	}
+	printf("program finished");
+	return 0;
+}
 
 
 If there is no problem in executing functionA, the program will operate well.
@@ -69,18 +69,18 @@ Now, if you apply try-catch here, the code will be like below
 
 int main(int argc,char** argv){<br />
 
-	printf("program started");<br />
-	while(true){<br />
-		try{<br />
-			functionA();<br />
-		}<br />
-		catch(){<br />
-			printf("error");<br />
-		}<br />
+	printf("program started");
+	while(true){
+		try{
+			functionA();
+		}
+		catch(){
+			printf("error");
+		}
 	}<br />
-	printf("program finished");<br />
-	return 0;<br />
-}<br />
+	printf("program finished");
+	return 0;
+}
 
 
 It is trivial that the program will operate well if there is no problem in executing functionA.
