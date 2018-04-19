@@ -51,6 +51,7 @@ Let's say there is a program like below
 
 
 int main(int argc,char** argv){<br />
+
 	printf("program started");<br />
 	while(true){<br />
 		functionA();<br />
