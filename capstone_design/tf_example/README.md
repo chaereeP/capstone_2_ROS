@@ -49,7 +49,7 @@ In your project, you can use dynamic transformation publisher for your mobile pl
 
 Let's say there is a program like below
 
-===
+
 int main(int argc,char** argv){
 	printf("program started");
 	while(true){
@@ -59,13 +59,13 @@ int main(int argc,char** argv){
 	return 0;
 }
 
-===
+
 If there is no problem in executing functionA, the program will operate well.
 If there is a problem, then error will be shown when processing functionA, then the program will be terminated. 
 
 Now, if you apply try-catch here, the code will be like below
 
-===
+
 int main(int argc,char** argv){
 	printf("program started");
 	while(true){
@@ -79,7 +79,7 @@ int main(int argc,char** argv){
 	printf("program finished");
 	return 0;
 }
-===
+
 
 It is trivial that the program will operate well if there is no problem in executing functionA.
 In addition, this program will not be terminated if there is a problem in executing functionA. 
