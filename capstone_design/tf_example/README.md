@@ -92,9 +92,9 @@ Then, why this try-catch is required for subscribing tf in ROS?
 When you type 'rostopic echo /tf' in your terminal after running the node "static_tf_example" or "dynamic_tf_example", 
 you can see a tf information with stamped time information when a message is published. 
 
-Computing a transformation between different time step can cause huge error. For example, 
+Computing a transformation between different time step can cause meanigless result. For example, 
 
-transformation between "world" at 0.1s & "camera_link" at 11.32s will have huge error, especially when one of links is moving.
+transformation between "world" at 0.1s & "camera_link" at 11.32s will be meaningless, especially when one of links is moving.
 Therefore, the function that compute transformation has strict rule for this timing things. 
 (in source code, you can find a line
 'listener.lookupTransform("/world", "/camera_link", ros::Time(0), transform);' )
