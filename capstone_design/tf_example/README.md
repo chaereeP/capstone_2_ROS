@@ -50,14 +50,14 @@ In your project, you can use dynamic transformation publisher for your mobile pl
 Let's say there is a program like below
 
 
-int main(int argc,char** argv){
-	printf("program started");
-	while(true){
-		functionA();
-	}
-	printf("program finished");
-	return 0;
-}
+int main(int argc,char** argv){<br />
+	printf("program started");<br />
+	while(true){<br />
+		functionA();<br />
+	}<br />
+	printf("program finished");<br />
+	return 0;<br />
+}<br />
 
 
 If there is no problem in executing functionA, the program will operate well.
@@ -66,19 +66,20 @@ If there is a problem, then error will be shown when processing functionA, then 
 Now, if you apply try-catch here, the code will be like below
 
 
-int main(int argc,char** argv){
-	printf("program started");
-	while(true){
-		try{
-			functionA();
-		}
-		catch(){
-			printf("error");
-		}
-	}
-	printf("program finished");
-	return 0;
-}
+int main(int argc,char** argv){<br />
+
+	printf("program started");<br />
+	while(true){<br />
+		try{<br />
+			functionA();<br />
+		}<br />
+		catch(){<br />
+			printf("error");<br />
+		}<br />
+	}<br />
+	printf("program finished");<br />
+	return 0;<br />
+}<br />
 
 
 It is trivial that the program will operate well if there is no problem in executing functionA.
