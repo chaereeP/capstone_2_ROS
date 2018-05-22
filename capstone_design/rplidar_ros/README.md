@@ -45,6 +45,6 @@ ls -l /dev |grep ttyUSB
 sudo chmod 666 /dev/ttyUSB0
 
 rplidar 노드의 경우 매 실행시마다 실행하는 터미널에서 sudo chmod 로 /dev/ttyUSB0에 권한을 주어야하는 문제가 있으니,
-sudo gedit /etc/udev/rules.d/50-ttyusb.rules.d 후
+sudo gedit /etc/udev/rules.d/50-ttyusb.rules 후
 KERNEL=="ttyUSB0", NAME="tts/USB%n", GROUP="capstone",MODE="0666"
 을 입력하고 저장
