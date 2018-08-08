@@ -1,8 +1,0 @@
-prefix=/home/naverlabs/ros/TT_final/install
-
-Name: tt3_common
-Description: Description of tt3_common
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/naverlabs/ros/TT_final/install/lib 
-Requires: 

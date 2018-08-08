@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 import sys
-print(sys.path)
-
 import cv2
 import numpy as np
 import rospy, roslib, rospkg

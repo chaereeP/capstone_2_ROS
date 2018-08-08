@@ -1,8 +1,0 @@
-prefix=/home/naverlabs/ros/TT_final/install
-
-Name: tt_core_msgs
-Description: Description of tt_core_msgs
-Version: 0.0.0
-Cflags: -I/home/naverlabs/ros/TT_final/install/include
-Libs: -L/home/naverlabs/ros/TT_final/install/lib 
-Requires: message_runtime std_msgs geometry_msgs sensor_msgs

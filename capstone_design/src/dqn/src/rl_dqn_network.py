@@ -15,18 +15,12 @@ import rospy, roslib, rospkg
 frame_history_len=4
 
 dtype = torch.cuda.FloatTensor if torch.cuda.is_available() else torch.FloatTensor
-env = simulator.Task(debug_flag=True, test_flag=False, state_blink=True, state_inaccurate=True)
 
 
-if len(env.observation_space.shape) == 1:
-    # This means we are running on low-dimensional observations (e.g. RAM)
-    input_arg = env.observation_space.shape[0]
-else:
-    img_h, img_w, img_c = env.observation_space.shape
-    input_arg = frame_history_len * img_c
+
 rospack = rospkg.RosPack()
 root = rospack.get_path('dqn')
-path = root+"/src/DQN_net0729.pt"
+path = root+"/src/nuelnetwork/DQN_net0729.pt"
 
 test_model = torch.load(path)
 print('DQN_net0729.pt was loaded')

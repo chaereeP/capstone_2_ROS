@@ -1,6 +1,0 @@
-set(tt_rl_motion_planner_SETUP_PY_VERSION "0.0.0")
-set(tt_rl_motion_planner_SETUP_PY_SCRIPTS "")
-set(tt_rl_motion_planner_SETUP_PY_PACKAGES "tt_dqn;tt_a3c")
-set(tt_rl_motion_planner_SETUP_PY_PACKAGE_DIRS "src/tt_dqn;src/tt_a3c")
-set(tt_rl_motion_planner_SETUP_PY_MODULES "")
-set(tt_rl_motion_planner_SETUP_PY_MODULE_DIRS "")

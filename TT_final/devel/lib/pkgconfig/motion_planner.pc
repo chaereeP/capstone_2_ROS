@@ -1,8 +1,0 @@
-prefix=/home/naverlabs/ros/TT_final/devel
-
-Name: motion_planner
-Description: Description of motion_planner
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/naverlabs/ros/TT_final/devel/lib -lmotion_planner
-Requires: roscpp std_msgs sensor_msgs roslib tt_core_msgs geometry_msgs

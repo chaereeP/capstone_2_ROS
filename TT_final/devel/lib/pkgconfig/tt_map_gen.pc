@@ -1,8 +1,0 @@
-prefix=/home/naverlabs/ros/TT_final/devel
-
-Name: tt_map_gen
-Description: Description of tt_map_gen
-Version: 0.0.0
-Cflags: -I/home/naverlabs/ros/TT_final/src/tt3_motion/tt_map_gen/include
-Libs: -L/home/naverlabs/ros/TT_final/devel/lib -lmap_gen
-Requires: roscpp std_msgs sensor_msgs tt_core_msgs geometry_msgs image_transport

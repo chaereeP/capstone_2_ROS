@@ -1,0 +1,10 @@
+capstone_design/devel/*
+capstone_design/build*
+TT_final/devel/*
+TT_final/build/*
+
+*~
+*.pyc
+
+*.pth
+*.pt
