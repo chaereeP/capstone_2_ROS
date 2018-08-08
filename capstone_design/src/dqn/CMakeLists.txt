@@ -17,8 +17,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 )
 
-find_package(OpenCV REQUIRED )
-find_package( cv_bridge REQUIRED )
+find_package(OpenCV  REQUIRED )
+find_package(cv_bridge REQUIRED )
 
 # catkin_package(
 # #  INCLUDE_DIRS include
@@ -42,7 +42,7 @@ catkin_package(
 ###########
 
 ## Specify additional locations of header files
-## Your package locations should be listed before other locations
+## Your package locations should be listsed before other locations
 include_directories(
   ${OpenCV_INCLUDE_DIRS}
   ${cv_bridge_INCLUDE_DIRS}
@@ -50,9 +50,9 @@ include_directories(
   include
 )
 
-add_executable(covert_to_simulator_image src/covert_to_simulator_image.cpp)
-add_dependencies(covert_to_simulator_image core_msgs_generate_messages_cpp)
+add_executable(convert_sensor_to_image src/convert_sensor_to_image.cpp)
+add_dependencies(convert_sensor_to_image core_msgs_generate_messages_cpp)
 
-target_link_libraries(covert_to_simulator_image
+target_link_libraries(convert_sensor_to_image
   ${catkin_LIBRARIES} ${OpenCV_LIBS} ${cv_bridge_LIBRARIES}
 )
