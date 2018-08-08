@@ -1,2 +1,0 @@
-ball_detection:comm_tcp:core_msgs:data_integrate:dqn:image_transport_tutorial:launch_rviz:rplidar_ros:tf_example/compute_position_in_other_frame:tf_example/dynamic_tf_example:tf_example/fake_ball_in_rviz:tf_example/static_tf_example:webcam:xbox_ctrl
--DCATKIN_DEVEL_PREFIX=/home/naverlabs/ros/capstone_design/devel -DCMAKE_INSTALL_PREFIX=/home/naverlabs/ros/capstone_design/install -G Unix Makefiles

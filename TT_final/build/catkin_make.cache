@@ -1,0 +1,2 @@
+module/rplidar:tt3_common/tt3_common:tt3_common/tt3_description:tt3_common/tt_core_msgs:tt3_motion/motion_planner:tt3_motion/tt_map_gen:tt3_motion/tt_rl_motion_planner
+-DCATKIN_DEVEL_PREFIX=/home/naverlabs/ros/TT_final/devel -DCMAKE_INSTALL_PREFIX=/home/naverlabs/ros/TT_final/install -G Unix Makefiles

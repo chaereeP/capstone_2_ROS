@@ -1,8 +1,0 @@
-prefix=/home/naverlabs/ros/capstone_design/install
-
-Name: core_msgs
-Description: Description of core_msgs
-Version: 0.0.0
-Cflags: -I/home/naverlabs/ros/capstone_design/install/include
-Libs: -L/home/naverlabs/ros/capstone_design/install/lib 
-Requires: message_runtime std_msgs geometry_msgs sensor_msgs

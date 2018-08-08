@@ -1,0 +1,40 @@
+%YAML 1.0
+---
+#--------------------------------------------------------------------------------------------
+# Motion Planner Parameters
+#--------------------------------------------------------------------------------------------
+
+# Motion Policy Parameters
+originH: 50
+originV: 97.5
+fullSpeedDist: 12 #25
+ductOnDist: 5 #8
+movementThreshold: 0.25 #0.2
+eatThreshold: 12
+
+
+rotationHSConstant: 2 #0.6
+rotationLSConstant: 1.2 #0.3
+ductDirectionConstant: 1.25
+
+
+heuristicGainAbs: 0.1
+heuristicGainDist: 0.1
+
+reverseYVelocity: 0.6 #0.4
+reverseXVelocity: 0.3
+reverseZVelocity: 0.2
+
+# Astar Path Finder Parameters
+pathTarget: 4
+aStarForestsCost: 3
+aStarWallCost: 15
+
+#ball Search parameters
+searchCamSwingThreshold: 5
+searchWaitThreshold: 6
+searchRotateThreshold: 10
+searchFindRotateVelocity: 0.5
+searchRotateVelocity: 0.9 #0.3
+searchFindCountConstant: 3
+# 20fps

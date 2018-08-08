@@ -1,0 +1,11 @@
+build/*
+devel/*
+*~
+*.png
+*.save*
+*#
+*.pyc
+*temp.h5
+*.mp4
+*.h5
+tt_dqn_logs*

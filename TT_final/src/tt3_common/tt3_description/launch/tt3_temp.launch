@@ -1,0 +1,37 @@
+<launch>
+    <arg name="imshow" default="true"/>
+    <arg name="record" default="false"/>
+    <arg name="monitor" default="true"/>
+    <arg name="debug" default="false"/>
+    <arg name="ball_track_write" default="false"/>
+
+    <!-- <node name="cam_reader_genius" pkg="cam_reader" type="read-genius.py" args="$(find tt3_description)/config/camera-genius-640x360.yaml $(arg record)" /> -->
+    <node name="cam_reader_genius_record" pkg="cam_reader" type="read-genius-record.py" />
+    <!-- <node name="cam_reader_astra" pkg="cam_reader" type="read-astra.py" args="$(find tt3_description)/config/camera-astra-320x240.yaml $(arg monitor)" /> -->
+
+    <!-- <node name="ball_detect_astra_node" pkg="ball_detect" type="ball_detect_astra.py" args="$(find tt3_description)/config/camera-astra-320x240.yaml $(arg imshow) $(arg monitor)" /> -->
+    <!-- <node name="ball_detect_genius_node" pkg="ball_detect" type="ball_detect_genius.py" args="$(find tt3_description)/config/camera-genius-640x360.yaml $(arg imshow) $(arg monitor) $(arg debug) $(arg ball_track_write)" /> -->
+
+    <node name="ball_detection_node" pkg="tt_ball_detection" type="tt_detector" args="camera-genius-640x360.yaml $(arg imshow) $(arg monitor) $(arg debug) $(arg ball_track_write)" />
+    <node name="ball_detection_mobilenet_node" pkg="tt_ball_detection" type="tt_mobilenet" />
+
+    <!-- <node name="april_tag_node" pkg="april_tag" type="april_tag_reader" args="$(find tt3_description)/config/camera-genius-640x360.yaml $(arg imshow)" /> -->
+    <!-- <node name="chromatag_node" pkg="chromatag" type="chromatag_node" args="$(find tt3_description)/config/camera-genius-640x360.yaml $(arg imshow)" /> -->
+    <!-- <node name="obstacle_detect_node" pkg="obstacle_detect" type="obstacle_detect_node" args="$(find tt3_description)/config/camera-astra-320x240.yaml" /> -->
+    <!-- <node name="rplidar_node" pkg="rplidar" type="rplidar_node"/> -->
+    <!-- <node name="rplidar_client" pkg="rplidar" type="rplidar_client"/> -->
+
+    <!-- <include file="$(find tt_gmapping)/launch/tt_gmapping.launch"/> -->
+
+    <!-- <node name="map_gen_node" pkg="map_gen" type="map_gen_node" args="$(arg imshow)" /> -->
+    <!-- <node name="tt_map_gen_node" pkg="tt_map_gen" type="map_node" args="$(arg imshow)" /> -->
+    <!-- <node name="tt_monitor_node" pkg="tt_map_gen" type="tt_monitor_node"/> -->
+
+    <!-- <node name="xbox_ctrl_node" pkg="xbox_ctrl" type="xbox_ctrl_node" /> -->
+    <!-- <node name="dqn_planner_node" pkg="tt_rl_motion_planner" type="dqn_planner" /> -->
+    <!-- <node name="astar_planner_node" pkg="motion_planner" type="astar_planner" args="$(arg imshow)" /> -->
+    <!-- <node name="motion_planner_node" pkg="motion_planner" type="motion_planner_node" args="$(arg imshow)" /> -->
+
+    <!-- <node name="send_signal_node" pkg="motion_planner" type="send_signal_node" args="robot" /> -->
+
+</launch>

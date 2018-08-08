@@ -1,8 +1,0 @@
-prefix=/home/naverlabs/ros/capstone_design/install
-
-Name: webcam
-Description: Description of webcam
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/naverlabs/ros/capstone_design/install/lib 
-Requires: 

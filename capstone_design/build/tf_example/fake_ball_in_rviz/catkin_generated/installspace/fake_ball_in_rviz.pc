@@ -1,8 +1,0 @@
-prefix=/home/naverlabs/ros/capstone_design/install
-
-Name: fake_ball_in_rviz
-Description: Description of fake_ball_in_rviz
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/naverlabs/ros/capstone_design/install/lib 
-Requires: 

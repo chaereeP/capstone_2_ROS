@@ -1,8 +1,0 @@
-prefix=/home/naverlabs/ros/capstone_design/install
-
-Name: compute_position_in_other_frame
-Description: Description of compute_position_in_other_frame
-Version: 0.0.0
-Cflags: 
-Libs: -L/home/naverlabs/ros/capstone_design/install/lib 
-Requires: 

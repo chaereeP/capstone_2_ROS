@@ -1,0 +1,8 @@
+prefix=/home/naverlabs/ros/TT_final/devel
+
+Name: tt_rl_motion_planner
+Description: Description of tt_rl_motion_planner
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/naverlabs/ros/TT_final/devel/lib 
+Requires: rospy sensor_msgs std_msgs tt_core_msgs

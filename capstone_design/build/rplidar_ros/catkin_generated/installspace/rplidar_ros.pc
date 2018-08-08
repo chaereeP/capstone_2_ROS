@@ -1,8 +1,0 @@
-prefix=/home/naverlabs/ros/capstone_design/install
-
-Name: rplidar_ros
-Description: Description of rplidar_ros
-Version: 1.5.7
-Cflags: 
-Libs: -L/home/naverlabs/ros/capstone_design/install/lib 
-Requires: 

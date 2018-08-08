@@ -1,0 +1,4 @@
+<launch>
+    <node name="map_gen_node" pkg="map_gen" type="map_gen_test_node" args="$(find map_gen)/src/test.jpg"/>
+
+</launch>

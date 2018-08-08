@@ -1,0 +1,221 @@
+#!/usr/bin/env python
+import argparse
+import os.path as osp
+import random
+import numpy as np
+import cv2
+import rospy, rospkg
+
+from tt_core_msgs.msg import MapFlag, XboxFlag
+from cv_bridge import CvBridge, CvBridgeError
+
+import tensorflow as tf
+import sys, os, itertools, collections, time
+import tensorflow.contrib.layers as layers
+
+from tt_a3c.estimators import ValueEstimator, PolicyEstimator
+from tt_a3c.worker import make_copy_params_op
+
+from tt_dqn.dqn_utils import *
+
+#import simulator
+
+movingSpeed = 1
+turningSpeed = 0.6
+simulator = {"width":31, "height":31, "center":15, "resol":3}
+debug_scale_gray = 3
+
+class PolicyMonitor(object):
+    def __init__(self, policy_net):
+        self.global_policy_net = policy_net
+
+        # Local policy net
+        with tf.variable_scope("policy_eval"):
+            self.policy_net = PolicyEstimator(policy_net.num_outputs)
+
+        self.copy_params_op = make_copy_params_op(
+        tf.contrib.slim.get_variables(scope="global", collection=tf.GraphKeys.TRAINABLE_VARIABLES),
+        tf.contrib.slim.get_variables(scope="policy_eval", collection=tf.GraphKeys.TRAINABLE_VARIABLES))
+
+    def _policy_net_predict(self, state, rnn_state, sess):
+        self.policy_net.state_in[0] = rnn_state[0]
+        self.policy_net.state_in[1] = rnn_state[1]
+        feed_dict = { self.policy_net.states: [state] }
+        preds, state_out = sess.run([self.policy_net.predictions, self.policy_net.state_out], feed_dict)
+        return preds["probs"][0], state_out
+
+class a3c_planner:
+    def __init__(self, session):
+        frame_history_len=4
+        num_actions = 10
+        self.img_h, self.img_w, self.img_c = simulator["height"]*debug_scale_gray, simulator["width"]*debug_scale_gray, 1
+        input_shape = (self.img_h, self.img_w, frame_history_len * self.img_c)
+
+        rospack = rospkg.RosPack()
+        root = rospack.get_path('tt_rl_motion_planner')
+        MODEL_DIR = root+'/src/tt_a3c/data/train'
+        CHECKPOINT_DIR = os.path.join(MODEL_DIR, "checkpoints")
+
+        with tf.variable_scope("global") as vs:
+            policy_net = PolicyEstimator(num_outputs=num_actions)
+
+        saver = tf.train.Saver(keep_checkpoint_every_n_hours=2.0, max_to_keep=10)
+        self.pe = PolicyMonitor(policy_net=policy_net)
+
+        self.sess = session
+        self.sess.run(tf.global_variables_initializer())
+        coord = tf.train.Coordinator()
+
+        # Load a previous checkpoint if it exists
+        latest_checkpoint = tf.train.latest_checkpoint(CHECKPOINT_DIR)
+        if latest_checkpoint:
+            print("Loading model checkpoint: {}".format(latest_checkpoint))
+            saver.restore(self.sess, latest_checkpoint)
+        else:
+            print("Fail to load model")
+            return
+
+        with self.sess.as_default(), self.sess.graph.as_default():
+            _ = self.sess.run(self.pe.copy_params_op)
+
+        self.done = False
+        self.state_init = np.stack([np.zeros((93,93), np.uint8)] * frame_history_len, axis=2)
+        self.state = self.state_init
+        self.rnn_state = self.pe.policy_net.state_init
+
+        self.bridge = CvBridge()
+
+        self.num_episode = 0
+        self.start_episode = 0
+
+        self.dqn_sub = rospy.Subscriber("/map_gen/rl_map", MapFlag, self.callback, queue_size=1)
+        self.action_pub = rospy.Publisher("/dqn_planner/ctrl", XboxFlag, queue_size=1)
+
+        self.suction_on = 0
+
+        return
+
+    def callback(self, data):
+        try:
+            self.last_obs = self.bridge.imgmsg_to_cv2(data.frame, "mono8").reshape(self.img_h, self.img_w, -1)
+        except CvBridgeError as e:
+            print(e)
+
+        xbox_msg = XboxFlag()
+        xbox_msg.header.stamp = data.header.stamp
+        xbox_msg.Float32MultiArray.data = [0]*24
+        if data.flag == 3:
+            xbox_msg.flag = 0
+        else:
+            xbox_msg.flag = data.flag
+        #cv2.imshow("dqn test",self.last_obs)
+        #cv2.waitKey(1)
+
+        # 0: run dqn, 1: run astar, 2: run astar and send done, 3: run dqn with slow speed
+        if data.flag == 0 or data.flag == 3:
+            self.state = np.append(self.state[:,:,1:], np.expand_dims(self.last_obs.reshape(93,93), 2), axis=2)
+            action_probs, self.rnn_state = self.pe._policy_net_predict(self.state, self.rnn_state, self.sess)
+            act = np.argmax(action_probs)
+            print action_probs
+            print act
+            self.start_episode = 1
+            xbox_msg.Float32MultiArray.data = self.mapAction(act, data.flag)
+            self.action_pub.publish(xbox_msg)
+        elif data.flag == 1:
+            self.suction_on = 10
+            self.action_pub.publish(xbox_msg)
+        elif data.flag == 2:
+            if self.start_episode == 1:
+                self.state = np.append(self.state[:,:,1:], np.expand_dims(self.last_obs.reshape(93,93), 2), axis=2)
+                action_probs, self.rnn_state = self.pe._policy_net_predict(self.state, self.rnn_state, self.sess)
+                act = np.argmax(action_probs)
+                print action_probs
+                print act
+                self.state = self.state_init
+                self.rnn_state = self.pe.policy_net.state_init
+                self.num_episode = self.num_episode + 1
+                self.start_episode = 0
+            self.action_pub.publish(xbox_msg)
+        else:
+            self.action_pub.publish(xbox_msg)
+
+        return
+
+    def mapAction(self, action, flag):
+        data = [0]*24
+
+    	# data[0] = 0; //lx*data[3];
+    	# data[1] = 0; //ly*data[3];
+    	# data[2] = 0; //GamepadStickAngle(_dev, STICK_LEFT);
+    	# data[3] = 0; //GamepadStickLength(_dev, STICK_LEFT);
+    	# data[4] = 0; //rx*data[7];
+    	# data[5] = 0; //ry*data[7];
+    	# data[6] = 0; //GamepadStickAngle(_dev, STICK_RIGHT);
+    	# data[7] = 0; //GamepadStickLength(_dev, STICK_RIGHT);
+    	# data[8] = 0; //GamepadTriggerLength(_dev, TRIGGER_LEFT);
+    	# data[9] = 0; //GamepadTriggerLength(_dev, TRIGGER_RIGHT);
+    	# data[10] = 0; //GamepadButtonDown(_dev, BUTTON_DPAD_UP);
+    	# data[11] = 0; //GamepadButtonDown(_dev, BUTTON_DPAD_DOWN);
+    	# data[12] = 0; //GamepadButtonDown(_dev, BUTTON_DPAD_LEFT);
+    	# data[13] = 0; //GamepadButtonDown(_dev, BUTTON_DPAD_RIGHT);
+    	# data[14] = 0; //GamepadButtonDown(_dev, BUTTON_A); // duct on/off
+    	# data[15] = 0; //GamepadButtonDown(_dev, BUTTON_B);
+    	# data[16] = 0; //GamepadButtonDown(_dev, BUTTON_X);
+    	# data[17] = 0; //GamepadButtonDown(_dev, BUTTON_Y);
+    	# data[18] = 0; //GamepadButtonDown(_dev, BUTTON_BACK);
+    	# data[19] = 0; //GamepadButtonDown(_dev, BUTTON_START);
+    	# data[20] = 0; //GamepadButtonDown(_dev, BUTTON_LEFT_SHOULDER);
+    	# data[21] = 0; //GamepadButtonDown(_dev, BUTTON_RIGHT_SHOULDER);
+    	# data[22] = 0; //GamepadButtonDown(_dev, BUTTON_LEFT_THUMB);
+    	# data[23] = 0; //GamepadButtonDown(_dev, BUTTON_RIGHT_THUMB);
+
+        if self.suction_on > 0:
+            data[14] = 1
+            self.suction_on = self.suction_on - 1
+
+        if flag == 0:
+            movingSpeed = 1
+        else:
+            movingSpeed = 0.6
+
+        if action == 0: # forward
+            data[1] = movingSpeed
+        elif action == 1: # forward right
+            data[0] = movingSpeed/1.414
+            data[1] = movingSpeed/1.414
+        elif action == 2: # right
+            data[0] = movingSpeed
+        elif action == 3: # backward right
+            data[0] = movingSpeed/1.414
+            data[1] = -movingSpeed/1.414
+        elif action == 4: # backward
+            data[1] = -movingSpeed
+        elif action == 5: # bacward left
+            data[0] = -movingSpeed/1.414
+            data[1] = -movingSpeed/1.414
+        elif action == 6: # left
+            data[0] = -movingSpeed
+        elif action == 7: # forward left
+            data[0] = -movingSpeed/1.414
+            data[1] = movingSpeed/1.414
+        elif action == 8: # turn left
+            data[8] = turningSpeed
+        elif action == 9: # turn right
+            data[9] = turningSpeed
+        else:
+            data = [0]*24
+
+        return data
+
+def main():
+    sess = tf.Session()
+    rospy.init_node('tt_a3c_planner', anonymous=True)
+    planner = a3c_planner(sess)
+
+    try:
+        rospy.spin()
+    except KeyboardInterrupt:
+        print("Shutting down")
+
+if __name__ == "__main__":
+    main()

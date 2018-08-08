@@ -1,0 +1,32 @@
+<launch>
+    <arg name="imshow" default="true"/>
+    <arg name="record" default="true"/>
+    <arg name="monitor" default="true"/>
+    <arg name="debug" default="false"/>
+    <arg name="debug_mobilenet" default="true"/>
+    <arg name="ball_track_write" default="false"/>
+
+    <!-- <node name="cam_reader_genius" pkg="cam_reader" type="read-genius.py" args="$(find tt3_description)/config/camera-genius-640x360.yaml $(arg record)" /> -->
+
+    <!-- <node name="ball_detection_sync_node" pkg="tt_ball_detection" type="tt_ball_sync" /> -->
+    <!-- <node name="ball_detection_node" pkg="tt_ball_detection" type="tt_detector" args="camera-genius-640x360.yaml $(arg imshow) $(arg monitor) $(arg debug) $(arg ball_track_write)" /> -->
+    <node name="ball_detection_mobilenet_node" pkg="tt_ball_detection" type="tt_mobilenet" args="$(arg record) $(arg debug_mobilenet) $(arg ball_track_write)"/>
+
+    <!-- <include file="$(find rplidar)/launch/rplidar.launch"/> -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0.0 0.0 0.0 0.0 0.0 0.0 /base_link /laser 10" />
+    <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" name="laser_scan_matcher_node" output="screen">
+        <param name="fixed_frame" value="odom"/>
+        <param name="use_alpha_beta" value="true"/>
+        <param name="max_iterations" value="10"/>
+    </node> -->
+
+    <!-- <node name="tt_map_gen_node" pkg="tt_map_gen" type="map_node" args="$(arg imshow) $(arg record)" /> -->
+    <!-- <node name="tt_ball_monitor_local" pkg="tt_map_gen" type="ball_detect_monitor_node" args="$(arg record) $(arg debug)" /> -->
+
+    <!-- <node name="xbox_ctrl_node" pkg="xbox_ctrl" type="xbox_ctrl_node" /> -->
+    <!-- <node name="dqn_planner_node" pkg="tt_rl_motion_planner" type="dqn_planner" /> -->
+    <!-- <node name="astar_planner_node" pkg="motion_planner" type="astar_planner" args="$(arg imshow)" /> -->
+
+    <!-- <node name="send_signal_node" pkg="motion_planner" type="send_signal_node" args="robot" /> -->
+
+</launch>
