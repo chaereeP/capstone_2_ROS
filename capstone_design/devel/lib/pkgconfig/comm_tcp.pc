@@ -1,0 +1,8 @@
+prefix=/home/naverlabs/ros/capstone_design/devel
+
+Name: comm_tcp
+Description: Description of comm_tcp
+Version: 0.1.0
+Cflags: 
+Libs: -L/home/naverlabs/ros/capstone_design/devel/lib -lcomm_tcp
+Requires: roscpp rospy std_msgs

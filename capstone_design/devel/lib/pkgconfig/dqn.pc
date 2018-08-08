@@ -1,0 +1,8 @@
+prefix=/home/naverlabs/ros/capstone_design/devel
+
+Name: dqn
+Description: Description of dqn
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/naverlabs/ros/capstone_design/devel/lib 
+Requires: roscpp rospy std_msgs sensor_msgs

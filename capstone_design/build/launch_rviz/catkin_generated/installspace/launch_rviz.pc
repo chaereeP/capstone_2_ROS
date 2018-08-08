@@ -1,0 +1,8 @@
+prefix=/home/naverlabs/ros/capstone_design/install
+
+Name: launch_rviz
+Description: Description of launch_rviz
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/naverlabs/ros/capstone_design/install/lib 
+Requires: 

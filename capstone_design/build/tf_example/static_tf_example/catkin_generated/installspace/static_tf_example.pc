@@ -1,0 +1,8 @@
+prefix=/home/naverlabs/ros/capstone_design/install
+
+Name: static_tf_example
+Description: Description of static_tf_example
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/naverlabs/ros/capstone_design/install/lib 
+Requires: 
