@@ -18,6 +18,8 @@
 #include <cv_bridge/cv_bridge.h>
 
 #include "core_msgs/ball_position.h"
+#include "core_msgs/multiarray.h"
+
 
 #include "sensor_msgs/LaserScan.h"
 
@@ -41,6 +43,8 @@ int robot_padding_color=150;
 
 
 boost::mutex map_mutex;
+ros::Publisher pub;
+
 cv::Mat map = cv::Mat::zeros(MAP_WIDTH, MAP_HEIGHT, CV_8UC1);
 
 int lidar_size;
@@ -94,20 +98,19 @@ bool check_point_range(int cx, int cy)
 int main(int argc, char **argv)
 {
 
-
     ros::init(argc, argv, "covert_sensor_to_image");
     ros::NodeHandle n;
     ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
     ros::Subscriber sub1 = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback);
     ros::NodeHandle nh;
-    image_transport::ImageTransport it(nh);
-    image_transport::Publisher pub = it.advertise("RL_state/image", 1);
-    sensor_msgs::ImagePtr msg;
+    ros::Publisher pub;
+    pub = nh.advertise<core_msgs::multiarray>("RL_state/image", 1000); //setting publisher
 
-    ros::Rate loop_rate(5);
+
 
     while(ros::ok){
       cv::Mat map = cv::Mat::zeros(MAP_WIDTH*scale_up_size, MAP_HEIGHT*scale_up_size, CV_8UC1); //91*91 size image
+
       // Drawing Lidar data
       float obstacle_x, obstacle_y;
       int cx, cy;
@@ -142,12 +145,26 @@ int main(int argc, char **argv)
       // cv::circle(map,cv::Point(MAP_WIDTH/2, MAP_HEIGHT/2),3,cv::Scalar(255,0,0),-1);
       cv::rectangle(map,cv::Point(((MAP_WIDTH/2)-2)*scale_up_size-1, (MAP_HEIGHT-2)*scale_up_size+1),cv::Point(((MAP_WIDTH/2)+3)*scale_up_size, MAP_HEIGHT*scale_up_size-1), cv::Scalar(robot_padding_color), -1);
       cv::rectangle(map,cv::Point(((MAP_WIDTH/2))*scale_up_size-1, (MAP_HEIGHT-1)*scale_up_size+1),cv::Point(((MAP_WIDTH/2)+1)*scale_up_size, MAP_HEIGHT*scale_up_size-1), cv::Scalar(robot_color), -1);
-      msg = cv_bridge::CvImage(std_msgs::Header(), "mono8", map).toImageMsg();
-      //리사이즈한 이미지를 publish
-      pub.publish(msg);
 
+      // if it is posible to use cvbrideg, you can use below
+      // msg = cv_bridge::CvImage(std_msgs::Header(), "mono8", map).toImageMsg();
+
+      // because we cannot use cv_bridge in pyton3
+      core_msgs::multiarray msg;
+      int rows = map.rows;
+      int cols = map.cols;
+      msg.data.resize(rows*cols);  //adjust the size of array
+      msg.cols=cols;
+      msg.rows=rows;
+      for(int i = 0; i < rows; i++){
+        for(int j = 0; j < cols; j++){
+          msg.data[i*rows+j]=map.at<uchar>(i,j);
+        }
+      }
+
+      pub.publish(msg);
       cv::imshow("Frame",map);
-      cv::waitKey(50);
+      cv::waitKey(30);
 
       ros::spinOnce();
     }

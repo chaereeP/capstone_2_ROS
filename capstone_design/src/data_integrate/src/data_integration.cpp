@@ -12,6 +12,8 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <boost/thread.hpp>
+
 
 #include <ros/ros.h>
 #include <ros/package.h>
@@ -19,6 +21,7 @@
 
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
+#include "std_msgs/Int8.h"
 
 #include "opencv2/opencv.hpp"
 
@@ -28,6 +31,8 @@ using namespace std;
 
 #define PORT 4000
 #define IPADDR "127.0.0.1" // myRIO ipadress
+
+boost::mutex map_mutex;
 
 
 int lidar_size;
@@ -40,6 +45,8 @@ float ball_X[20];
 float ball_Y[20];
 float ball_distance[20];
 int near_ball;
+
+int action;
 
 int c_socket, s_socket;
 struct sockaddr_in c_addr;
@@ -76,10 +83,18 @@ void dataInit()
 	data[22] = 0; //GamepadButtonDown(_dev, BUTTON_LEFT_THUMB);
 	data[23] = 0; //GamepadButtonDown(_dev, BUTTON_RIGHT_THUMB);
 }
+void rl_action_Callback(const std_msgs::Int8::ConstPtr& msg)
+{
+		map_mutex.lock();
+    int action = msg->data;
+		map_mutex.unlock();
+		printf("%d\n",action);
 
+}
 
 void lidar_Callback(const sensor_msgs::LaserScan::ConstPtr& scan)
 {
+		map_mutex.lock();
 
     int count = scan->scan_time / scan->time_increment;
     lidar_size=count;
@@ -88,6 +103,7 @@ void lidar_Callback(const sensor_msgs::LaserScan::ConstPtr& scan)
         lidar_degree[i] = RAD2DEG(scan->angle_min + scan->angle_increment * i);
         lidar_distance[i]=scan->ranges[i];
     }
+		map_mutex.unlock();
 
 }
 void camera_Callback(const core_msgs::ball_position::ConstPtr& position)
@@ -118,18 +134,20 @@ int main(int argc, char **argv)
 
     ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
     ros::Subscriber sub1 = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback);
-    dataInit();
+		ros::Subscriber sub2 = n.subscribe<std_msgs::Int8>("action/int8", 1000, rl_action_Callback);
+
+		dataInit();
 
     c_socket = socket(PF_INET, SOCK_STREAM, 0);
     c_addr.sin_addr.s_addr = inet_addr(IPADDR);
     c_addr.sin_family = AF_INET;
     c_addr.sin_port = htons(PORT);
 
-    if(connect(c_socket, (struct sockaddr*) &c_addr, sizeof(c_addr)) == -1){
-        printf("Failed to connect\n");
-        close(c_socket);
-        return -1;
-    }
+    // if(connect(c_socket, (struct sockaddr*) &c_addr, sizeof(c_addr)) == -1){
+    //     printf("Failed to connect\n");
+    //     close(c_socket);
+    //     return -1;
+    // }
 
 
     while(ros::ok){
@@ -183,11 +201,12 @@ int main(int argc, char **argv)
 		// }
 
 		//자율 주행 알고리즘에 입력된 제어데이터(xbox 컨트롤러 데이터)를 myRIO에 송신(tcp/ip 통신)
-	      for (int i = 0; i < 24; i++){
-	      printf("%f ",data[i]);
-
-	      }
-	      printf("\n");
+	      // for (int i = 0; i < 24; i++){
+	      // printf("%f ",data[i]);
+				//
+	      // }
+	      // printf("\n");
+			// printf("%d\n",action);
 	    write(c_socket, data, sizeof(data));
 	    ros::Duration(0.025).sleep();
 	    ros::spinOnce();
