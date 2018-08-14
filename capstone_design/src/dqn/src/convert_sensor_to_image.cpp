@@ -17,11 +17,13 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <cv_bridge/cv_bridge.h>
 
+
 #include "core_msgs/ball_position.h"
 #include "core_msgs/multiarray.h"
 
 
 #include "sensor_msgs/LaserScan.h"
+#include "sensor_msgs/CompressedImage.h"
 
 #include "opencv2/opencv.hpp"
 
@@ -104,7 +106,7 @@ int main(int argc, char **argv)
     ros::Subscriber sub1 = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback);
     ros::NodeHandle nh;
     ros::Publisher pub;
-    pub = nh.advertise<core_msgs::multiarray>("RL_state/image", 1000); //setting publisher
+    pub = nh.advertise<sensor_msgs::CompressedImage>("RL_state/image", 1); //setting publisher
 
 
 
@@ -150,19 +152,24 @@ int main(int argc, char **argv)
       // msg = cv_bridge::CvImage(std_msgs::Header(), "mono8", map).toImageMsg();
 
       // because we cannot use cv_bridge in pyton3
-      core_msgs::multiarray msg;
-      int rows = map.rows;
-      int cols = map.cols;
-      msg.data.resize(rows*cols);  //adjust the size of array
-      msg.cols=cols;
-      msg.rows=rows;
-      for(int i = 0; i < rows; i++){
-        for(int j = 0; j < cols; j++){
-          msg.data[i*rows+j]=map.at<uchar>(i,j);
-        }
-      }
+      // core_msgs::multiarray msg;
+      // int rows = map.rows;
+      // int cols = map.cols;
+      // msg.data.resize(rows*cols);  //adjust the size of array
+      // msg.cols=cols;
+      // msg.rows=rows;
+      // for(int i = 0; i < rows; i++){
+      //   for(int j = 0; j < cols; j++){
+      //     msg.data[i*rows+j]=map.at<uchar>(i,j);
+      //   }
+      // }
+
+
+      sensor_msgs::CompressedImage msg;
+      cv::imencode(".jpg", map, msg.data);
 
       pub.publish(msg);
+
       cv::imshow("Frame",map);
       cv::waitKey(30);
 

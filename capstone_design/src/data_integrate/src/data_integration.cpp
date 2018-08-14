@@ -22,10 +22,11 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 #include "std_msgs/Int8.h"
+#include "std_msgs/String.h"
+
 
 #include "opencv2/opencv.hpp"
 
-using namespace std;
 
 #define RAD2DEG(x) ((x)*180./M_PI)
 
@@ -33,7 +34,6 @@ using namespace std;
 #define IPADDR "127.0.0.1" // myRIO ipadress
 
 boost::mutex map_mutex;
-
 
 int lidar_size;
 float lidar_degree[400];
@@ -86,9 +86,20 @@ void dataInit()
 void rl_action_Callback(const std_msgs::Int8::ConstPtr& msg)
 {
 		map_mutex.lock();
-    int action = msg->data;
+    action = msg->data;
 		map_mutex.unlock();
-		printf("%d\n",action);
+		printf("subscribe action is %d\n",action);
+
+
+}
+
+void catdog_cnn_Callback(const std_msgs::String::ConstPtr& msg)
+{
+		map_mutex.lock();
+    std::string catdog = msg->data;
+		map_mutex.unlock();
+		printf("subscribe message is %s\n",catdog.c_str());
+
 
 }
 
@@ -135,6 +146,7 @@ int main(int argc, char **argv)
     ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
     ros::Subscriber sub1 = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback);
 		ros::Subscriber sub2 = n.subscribe<std_msgs::Int8>("action/int8", 1000, rl_action_Callback);
+		ros::Subscriber sub3 = n.subscribe<std_msgs::String>("catdog/String", 1000, catdog_cnn_Callback);
 
 		dataInit();
 
