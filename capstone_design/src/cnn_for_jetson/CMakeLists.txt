@@ -28,9 +28,9 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   include
 )
-add_executable(test1 src/test1.cpp)
+add_executable(testimage_publisher src/testimage_publisher.cpp)
 
-target_link_libraries(test1
+target_link_libraries(testimage_publisher
   ${catkin_LIBRARIES} ${OpenCV_LIBS}
 )
 
