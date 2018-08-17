@@ -31,7 +31,12 @@ rospack = rospkg.RosPack()
 root = rospack.get_path('cnn_for_jetson')
 path = root+"/src/nuelnetwork/CNN_dogcat0810.pt"
 
-test_model = torch.load(path)
+
+
+if torch.cuda.is_available():
+    test_model = torch.load(path)
+else:
+    test_model=torch.load(path, map_location='cpu')
 print('CNN_dogcat0810.pt was loaded')
 
 

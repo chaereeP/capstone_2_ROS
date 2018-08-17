@@ -14,6 +14,7 @@
 #include <ros/ros.h>
 #include <boost/thread.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include <ros/package.h>
 
 #include "ros/ros.h"
 
@@ -24,17 +25,19 @@
 
 using namespace std;
 
-
 int main(int argc, char **argv)
 {
 
-    ros::init(argc, argv, "test");
+    ros::init(argc, argv, "testimage_publisher");
     ros::NodeHandle n;
     ros::Publisher pub;
     pub = n.advertise<sensor_msgs::CompressedImage>("catdog/image", 1); //setting publisher
 
+
+
     cv::Mat image;
-    image = cv::imread("/home/naverlabs/ROS_code/capstone_design/src/cnn_for_jetson/src/cat.325.jpg",CV_LOAD_IMAGE_COLOR);
+    // Write down your image directory
+    image = cv::imread("/home/kaistbot/capstone_design_ROS/capstone_design/src/cnn_for_jetson/src/cat.325.jpg",CV_LOAD_IMAGE_COLOR);
 
     while(ros::ok){
 
