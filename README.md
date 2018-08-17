@@ -97,6 +97,17 @@ echo "source /opt/ros/kinetic/setup.bash" >> ~/.bashrc
 roscore
 ```
 
+### Caution when run python source in ROS
+```
+when you run python source code, code need that line on top.
+
+run in python3:
+  #! /usr/bin/env python3
+  
+run in python2 or python:
+   #! /usr/bin/env python
+```
+
 # Caution when catkin_make
 ----------------------------------------------------------------------------------------------------
 
