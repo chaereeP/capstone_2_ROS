@@ -19,6 +19,29 @@ sudo apt-get -y install --no-install-recommends \
                     python-tk \
                     python-setuptools \
                     
+
+                    
+pip install -U numpy \
+                    argparse \
+                    pyyaml \
+                    opencv-python \
+                    rospkg \
+                    catkin-pkg \
+                    scipy \
+                    matplotlib \
+                    gym \
+                    torch
+                    torchvision \
+                    
+****(Optional)-if you want work on python3
+
+sudo apt-get -y install --no-install-recommends \
+                    python3\
+                    python3-pip \
+                    python3-tk \
+                    python3-setuptools \
+                    
+                    
 pip3 install -U numpy \
                     argparse \
                     pyyaml \
