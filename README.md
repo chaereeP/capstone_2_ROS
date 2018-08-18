@@ -33,7 +33,7 @@ pip install -U numpy \
                     torch
                     torchvision \
                     
-****(Optional)-if you want work on python3
+****(Optional)-if you want to work on python3
 
 sudo apt-get -y install --no-install-recommends \
                     python3\
