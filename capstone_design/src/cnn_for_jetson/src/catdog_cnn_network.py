@@ -46,22 +46,19 @@ class catdog_cnn_network:
         self.image_sub = rospy.Subscriber("cropped_img",markermsg,self.callback)
 
     def callback(self,data):
-        np_arr_1 = np.fromstring(data.cimage1.data, np.uint8)
-        np_arr_2 = np.fromstring(data.cimage2.data, np.uint8)
-        cv_image_1 = cv2.imdecode(np_arr_1 ,cv2.IMREAD_COLOR )
-        cv_image_2 = cv2.imdecode(np_arr_2,cv2.IMREAD_COLOR )
-
-
-        cv2.imshow("first_image", cv_image_1)
-        cv2.imshow("second_image", cv_image_2)
-        cv2.waitKey(1000)
-        for cv_image in [cv_image_1,cv_image_2]:
-
-            if cv_image.all==cv_image_1.all:
-                first_image=True
+        for [available, num] in [[data.image1_available,1] ,[data.image2_available,2]]:
+            if available==True and num==1:
+                np_arr= np.fromstring(data.cimage1.data, np.uint8)
+                cv_image= cv2.imdecode(np_arr ,cv2.IMREAD_COLOR )
+                cv2.imshow("first_image", cv_image)
+                cv2.waitKey(500)
+            elif available==True and num==2:
+                np_arr= np.fromstring(data.cimage2.data, np.uint8)
+                cv_image= cv2.imdecode(np_arr,cv2.IMREAD_COLOR )
+                cv2.imshow("second_image", cv_image)
+                cv2.waitKey(500)
             else:
-                first_image=False
-
+                continue
             cv_image=Image.fromarray(cv_image)
             input_transform=data_T(cv_image)
             input_tensor=torch.zeros([1,3, 224, 224]).to(device)
@@ -74,7 +71,7 @@ class catdog_cnn_network:
             for x in ['cat','dog']:
                 if x ==['cat','dog'][preds]:
                     pub.publish(x)
-                    if first_image:
+                    if num==1:
                         print('first image is ' ,x)
                     else:
                         print('second image is ' ,x)
