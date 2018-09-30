@@ -10,7 +10,7 @@ from torchvision import datasets, models, transforms
 
 
 from std_msgs.msg import String
-from sensor_msgs.msg import CompressedImage
+from core_msgs.msg import markermsg
 
 import cv2
 import rospy, roslib, rospkg
@@ -43,27 +43,41 @@ print('CNN_dogcat0810.pt was loaded')
 
 class catdog_cnn_network:
     def __init__(self):
-        self.image_sub = rospy.Subscriber("catdog/image",CompressedImage,self.callback)
+        self.image_sub = rospy.Subscriber("cropped_img",markermsg,self.callback)
 
     def callback(self,data):
-        np_arr = np.fromstring(data.data, np.uint8)
-        cv_image = cv2.imdecode(np_arr ,cv2.IMREAD_COLOR )
-        cv2.imshow("Image window", cv_image)
-        cv2.waitKey(3)
+        np_arr_1 = np.fromstring(data.cimage1.data, np.uint8)
+        np_arr_2 = np.fromstring(data.cimage2.data, np.uint8)
+        cv_image_1 = cv2.imdecode(np_arr_1 ,cv2.IMREAD_COLOR )
+        cv_image_2 = cv2.imdecode(np_arr_2,cv2.IMREAD_COLOR )
 
-        cv_image=Image.fromarray(cv_image)
-        input_transform=data_T(cv_image)
-        input_tensor=torch.zeros([1,3, 224, 224]).to(device)
-        input_tensor[0]=input_transform
 
-        outputs = test_model(input_tensor)
-        _, preds = torch.max(outputs, 1)
-        # print(preds)
-        pub = rospy.Publisher('catdog/String', String, queue_size=1)
-        for x in ['cat','dog']:
-            if x ==['cat','dog'][preds]:
-                pub.publish(x)
-                print(x)
+        cv2.imshow("first_image", cv_image_1)
+        cv2.imshow("second_image", cv_image_2)
+        cv2.waitKey(1000)
+        for cv_image in [cv_image_1,cv_image_2]:
+
+            if cv_image.all==cv_image_1.all:
+                first_image=True
+            else:
+                first_image=False
+
+            cv_image=Image.fromarray(cv_image)
+            input_transform=data_T(cv_image)
+            input_tensor=torch.zeros([1,3, 224, 224]).to(device)
+            input_tensor[0]=input_transform
+
+            outputs = test_model(input_tensor)
+            _, preds = torch.max(outputs, 1)
+            # print(preds)
+            pub = rospy.Publisher('catdog/String', String, queue_size=1)
+            for x in ['cat','dog']:
+                if x ==['cat','dog'][preds]:
+                    pub.publish(x)
+                    if first_image:
+                        print('first image is ' ,x)
+                    else:
+                        print('second image is ' ,x)
 
 
 def main(args):

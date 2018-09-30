@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  core_msgs
 )
 find_package(OpenCV  REQUIRED )
 
@@ -30,6 +31,7 @@ include_directories(
   include
 )
 add_executable(testimage_publisher src/testimage_publisher.cpp)
+add_dependencies(testimage_publisher core_msgs_generate_messages_cpp)
 
 target_link_libraries(testimage_publisher
   ${catkin_LIBRARIES} ${OpenCV_LIBS}
