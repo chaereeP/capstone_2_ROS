@@ -53,3 +53,17 @@ cd vision
 python3 setup.py install
 
 ```
+
+### If you have a problem with below error.(for running "catdog_cnn_network.py")
+
+ImportError: /opt/ros/kinetic/lib/python2.7/dist-packages/cv2.so: undefined symbol: PyCObject_Type
+
+- These errors are caused by conflicts between Ross's OpenCV(python) and Ubuntu's OpenCV(python).
+So you can solve this problem by disabling ROS;s openCV(python).
+
+```
+cd /opt/ros/kinetic/lib/python2.7/dist-packages
+sudo mv cv2.so cv2.so.copy
+```
+
+
