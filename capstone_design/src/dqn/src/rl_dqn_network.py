@@ -31,6 +31,7 @@ else:
     test_model=torch.load(path, map_location='cpu')
     print('DQN_net0729.pt was loaded')
 
+
 input_image = np.zeros((input_number,img_rows,img_cols), np.uint8)
 
 
@@ -51,6 +52,7 @@ class rl_dqn_network:
         input_image[3]=cv_image
         image = torch.from_numpy(input_image).type(dtype).unsqueeze(0)/255.0
         action =torch.IntTensor([[test_model(image).data.max(1)[1].cpu()]])[0,0]
+        print('publishing action is ',action)
         pub = rospy.Publisher('action/int8', Int8, queue_size=1)
         pub.publish(int(action.item()))
 

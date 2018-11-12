@@ -45,7 +45,6 @@ int robot_padding_color=150;
 
 
 boost::mutex map_mutex;
-ros::Publisher pub;
 
 cv::Mat map = cv::Mat::zeros(MAP_WIDTH, MAP_HEIGHT, CV_8UC1);
 
@@ -57,8 +56,6 @@ float lidar_obs;
 int ball_number;
 float ball_X[20];
 float ball_Y[20];
-float ball_distance[20];
-int near_ball;
 
 
 void lidar_Callback(const sensor_msgs::LaserScan::ConstPtr& scan)
@@ -83,9 +80,8 @@ void camera_Callback(const core_msgs::ball_position::ConstPtr& position)
 
         ball_X[i] = position->img_x[i];
         ball_Y[i] = position->img_y[i];
-        // std::cout << "degree : "<< ball_degree[i];
-        // std::cout << "   distance : "<< ball_distance[i]<<std::endl;
-		ball_distance[i] = ball_X[i]*ball_X[i]+ball_Y[i]*ball_X[i];
+        std::cout << "ball_X : "<< ball_X[i];
+        std::cout << "   ball_Y : "<< ball_Y[i]<<std::endl;
     }
     map_mutex.unlock();
 
@@ -104,10 +100,9 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     ros::Subscriber sub = n.subscribe<sensor_msgs::LaserScan>("/scan", 1000, lidar_Callback);
     ros::Subscriber sub1 = n.subscribe<core_msgs::ball_position>("/position", 1000, camera_Callback);
-    ros::NodeHandle nh;
     ros::Publisher pub;
-    pub = nh.advertise<sensor_msgs::CompressedImage>("RL_state/image", 1); //setting publisher
-
+    pub = n.advertise<sensor_msgs::CompressedImage>("RL_state/image", 1000); //setting publisher
+    sensor_msgs::CompressedImage msg;
 
 
     while(ros::ok){
@@ -119,10 +114,8 @@ int main(int argc, char **argv)
       int cx1, cx2, cy1, cy2;
       for(int i = 0; i < lidar_size; i++)
       {
-          map_mutex.lock();
           obstacle_y = lidar_distance[i]*sin(lidar_degree[i]);
           obstacle_x = lidar_distance[i]*cos(lidar_degree[i]);
-          map_mutex.unlock();
 
           cx = MAP_WIDTH/2 + (int)(obstacle_y/MAP_RESOL);
           cy = MAP_HEIGHT + (int)(obstacle_x/MAP_RESOL);
@@ -134,10 +127,8 @@ int main(int argc, char **argv)
       // Drawing ball
       for(int i = 0; i < ball_number; i++)
       {
-          map_mutex.lock();
           cx = MAP_WIDTH/2 + (int)(ball_X[i]/MAP_RESOL);
           cy = MAP_HEIGHT - (int)(ball_Y[i]/MAP_RESOL);
-          map_mutex.lock();
 
           if(check_point_range(cx,cy)){
             cv::rectangle(map,cv::Point(cx*scale_up_size, cy*scale_up_size),cv::Point(cx*scale_up_size+2, cy*scale_up_size+2), cv::Scalar(ball_color), -1);
@@ -165,14 +156,15 @@ int main(int argc, char **argv)
       // }
 
 
-      sensor_msgs::CompressedImage msg;
+
       cv::imencode(".jpg", map, msg.data);
 
       pub.publish(msg);
 
       cv::imshow("Frame",map);
-      cv::waitKey(30);
-
+      if(cv::waitKey(50)==113){  //wait for a key command. if 'q' is pressed, then program will be terminated.
+        return 0;
+      }
       ros::spinOnce();
     }
 
